@@ -9,20 +9,30 @@ int main() {
   banco.InsereNome("ter", 1); 
   banco.InsereNome("termo", 2); 
   banco.InsereNome("teremos", 3); 
-  banco.InsereNome("terminar", 4); 
+  banco.InsereNome("terminar", 4);
+
+  std::vector<Id> pesquisas;
 
   try {
-    if (banco.PesquisaNome("termo") == 2)
-      std::cout << "Pesquisa 1 correta" << std::endl;
+    pesquisas = banco.PesquisaPrefixo("ter");
+    for (auto& id : pesquisas)
+      std::cout << id << " ";
+    std::cout << std::endl;
 
-    if (banco.PesquisaNome("ter") == 1)
-      std::cout << "Pesquisa 2 correta" << std::endl;
-      
-    if (banco.PesquisaNome("teremos") == 3)
-      std::cout << "Pesquisa 3 correta" << std::endl;
+    pesquisas = banco.PesquisaPrefixo("termo");
+    for (auto& id : pesquisas)
+      std::cout << id << " ";
+    std::cout << std::endl;
 
-    if (banco.PesquisaNome("terminar") == 4)
-      std::cout << "Pesquisa 4 correta" << std::endl;
+    pesquisas = banco.PesquisaPrefixo("teremos");
+    for (auto& id : pesquisas)
+      std::cout << id << " ";
+    std::cout << std::endl;
+
+    pesquisas = banco.PesquisaPrefixo("terminar");
+    for (auto& id : pesquisas)
+      std::cout << id << " ";
+    std::cout << std::endl;
   } catch (std::exception& erro) {
     std::cout << "Erro: " << erro.what() << std::endl;
   }

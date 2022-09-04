@@ -34,9 +34,10 @@ void BancoDeNomes::InsereNome(std::string nome, Id id) {
   }
 }
 
-Id BancoDeNomes::PesquisaNome(std::string nome) {
+std::vector<Id> BancoDeNomes::PesquisaPrefixo(std::string nome) {
   Letra* iterador = base;
-  Id resultado;
+  std::vector<Id> coletor;
+  int posicao = 0;
   for (auto& c : nome) {
     /* Se desloca lateralmente pela árvore até encontrar caractere ou nullptr */
     while (iterador != nullptr && iterador->caractere != c) {
@@ -51,10 +52,13 @@ Id BancoDeNomes::PesquisaNome(std::string nome) {
       throw std::invalid_argument("Nao foi possivel encontrar nome no banco de \
                                    nomes");
     /* Caso tenha encontrado caractere... */
-    resultado = iterador->id;
+    if (posicao == nome.size() - 1 && iterador->id != 0)
+      coletor.push_back(iterador->id);  // Coleta caso prefixo = nome completo
     iterador = iterador->proxima;
+    posicao++;
   }
-  return resultado;
+  ColetaNomes(iterador, coletor);
+  return coletor;
 }
 
 void BancoDeNomes::InsereRestante(std::string& nome, int posicao, int& id,
@@ -67,6 +71,16 @@ void BancoDeNomes::InsereRestante(std::string& nome, int posicao, int& id,
     (*destino)->esquerda = nullptr;
     (*destino)->direita = nullptr;
     destino = &((*destino)->proxima);
+  }
+}
+
+void BancoDeNomes::ColetaNomes(Letra* iterador, std::vector<Id>& coletor) {
+  if (iterador != nullptr) {
+    if (iterador->id != 0)
+      coletor.push_back(iterador->id);
+    ColetaNomes(iterador->proxima, coletor);
+    ColetaNomes(iterador->esquerda, coletor);
+    ColetaNomes(iterador->direita, coletor);
   }
 }
 

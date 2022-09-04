@@ -4,13 +4,14 @@
 #include "banco-de-jogadores.h"
 
 #include <string>
+#include <vector>
 
 class BancoDeNomes {
   public:
     BancoDeNomes();
     ~BancoDeNomes();
     void InsereNome(std::string nome, Id id);
-    Id PesquisaNome(std::string nome);
+    std::vector<Id> PesquisaPrefixo(std::string nome);
   private:
     class Letra {
       public:
@@ -24,6 +25,7 @@ class BancoDeNomes {
     Letra* base; 
     void InsereRestante(std::string& nome, int posicao, int& id,
                         Letra** destino);
+    void ColetaNomes(Letra* iterador, std::vector<Id>& coletor);
 };
 
 #endif
