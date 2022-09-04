@@ -3,14 +3,7 @@
 
 #include "banco-de-jogadores.h"
 
-#include <list>
 #include <string>
-
-struct Letra {
-  char caractere;
-  Id id;
-  Letra* proxima;
-};
 
 class BancoDeNomes {
   public:
@@ -19,7 +12,18 @@ class BancoDeNomes {
     void InsereNome(std::string nome, Id id);
     Id PesquisaNome(std::string nome);
   private:
-    std::list<Letra>* opcoes_de_letra;
+    class Letra {
+      public:
+        ~Letra();
+        char caractere;
+        Id id;
+        Letra* esquerda;
+        Letra* direita;
+        Letra* proxima;
+    };
+    Letra* base; 
+    void InsereRestante(std::string& nome, int posicao, int& id,
+                        Letra** destino);
 };
 
 #endif
