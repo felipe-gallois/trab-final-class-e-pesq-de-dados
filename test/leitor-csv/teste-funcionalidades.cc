@@ -10,7 +10,7 @@ int main() {
   /* sofifa_id,name,player_positions */
   std::string id;
   std::string nome;
-  std::vector<std::string> posicoes;
+  std::list<std::string> posicoes;
   while (!leitor.FimDoArquivo()) {
     leitor.LeLinha();
     leitor.Copia(0, id);

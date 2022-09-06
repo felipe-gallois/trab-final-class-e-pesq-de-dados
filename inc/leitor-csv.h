@@ -2,7 +2,7 @@
 #define LEITOR_CSV_H_
 
 #include <string>
-#include <vector>
+#include <list>
 #include <fstream>
 
 class LeitorCSV {
@@ -10,14 +10,14 @@ class LeitorCSV {
     explicit LeitorCSV(const char* nome_do_arquivo);
     void LeLinha();
     void Copia(int coluna, std::string& destino);
-    void CopiaLista(int coluna, std::vector<std::string>& destino);
+    void CopiaLista(int coluna, std::list<std::string>& destino);
     bool FimDoArquivo();
   private:
     bool fim_do_arquivo;
     std::ifstream entrada;
     std::string linha;
-    std::vector<std::string> colunas;
-    void SeparaColunas(std::string& linha, std::vector<std::string>& destino);
+    std::list<std::string> colunas;
+    void SeparaColunas(std::string& linha, std::list<std::string>& destino);
 };
 
 #endif

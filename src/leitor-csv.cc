@@ -3,6 +3,7 @@
 #include <string>
 #include <ios>
 #include <iostream>
+#include <list>
 
 LeitorCSV::LeitorCSV(const char* nome_do_arquivo) {
   entrada.open(nome_do_arquivo);
@@ -20,14 +21,16 @@ void LeitorCSV::LeLinha() {
 
 void LeitorCSV::Copia(int coluna, std::string& destino) {
   if (colunas.size() > coluna && coluna >= 0) {
-    destino = colunas[coluna];
+    auto iterador = colunas.begin();
+    std::advance(iterador, coluna);
+    destino = *iterador;
     return;
   } else {
     throw std::out_of_range("Tentou acessar posicao fora dos limites");
   }
 }
 
-void LeitorCSV::CopiaLista(int coluna, std::vector<std::string>& destino) {
+void LeitorCSV::CopiaLista(int coluna, std::list<std::string>& destino) {
   Copia(coluna, linha);
   destino.clear();
   SeparaColunas(linha, destino);
@@ -37,7 +40,7 @@ bool LeitorCSV::FimDoArquivo() {
   return fim_do_arquivo;
 }
 
-void LeitorCSV::SeparaColunas(std::string& linha, std::vector<std::string>& destino) {
+void LeitorCSV::SeparaColunas(std::string& linha, std::list<std::string>& destino) {
   size_t posicao = 0;
   while (linha.size() != 0) {
     if (linha[0] == '\"') {
