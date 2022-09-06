@@ -11,7 +11,7 @@ void ImprimeInfo(InfoJogador& info) {
 }
 
 int main() {
-  BancoDeJogadores banco(5);
+  BancoDeJogadores<5> banco;
 
   banco.InsereJogador(10, "Nome 1", {"AT", "GL"});
   banco.InsereJogador(11, "Nome 2", {"ZG"});

@@ -3,9 +3,9 @@ add_executable(
   teste-funcionalidades.cc
 )
 
-target_link_libraries(
+target_include_directories(
   teste-funcionalidades
-  banco-de-jogadores
+  PUBLIC "${PROJECT_SOURCE_DIR}/inc"
 )
 
 add_executable(
@@ -13,7 +13,7 @@ add_executable(
   teste-de-estresse.cc
 )
 
-target_link_libraries(
+target_include_directories(
   teste-de-estresse
-  banco-de-jogadores
+  PUBLIC "${PROJECT_SOURCE_DIR}/inc"
 )

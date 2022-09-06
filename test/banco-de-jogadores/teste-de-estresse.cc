@@ -3,7 +3,7 @@
 #include <iostream>
 
 int main() {
-  BancoDeJogadores banco(10000);
+  BancoDeJogadores<10000> banco;
 
   std::cout << "Estrutura de dados criada!" << std::endl;
 
