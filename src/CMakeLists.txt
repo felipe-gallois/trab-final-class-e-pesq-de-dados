@@ -17,3 +17,13 @@ target_include_directories(
   banco-de-nomes
   PUBLIC "${PROJECT_SOURCE_DIR}/inc"
 )
+
+add_library(
+  leitor-csv
+  leitor-csv.cc
+)
+
+target_include_directories(
+  leitor-csv
+  PUBLIC "${PROJECT_SOURCE_DIR}/inc"
+)
