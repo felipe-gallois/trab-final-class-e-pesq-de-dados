@@ -49,8 +49,7 @@ std::vector<Id> BancoDeNomes::PesquisaPrefixo(std::string nome) {
     }
     /* Caso tenha encontrado nullptr... */
     if (iterador == nullptr)
-      throw std::invalid_argument("Nao foi possivel encontrar nome no banco de \
-                                   nomes");
+      return {};
     /* Caso tenha encontrado caractere... */
     if (posicao == nome.size() - 1 && iterador->id != 0)
       coletor.push_back(iterador->id);  // Coleta caso prefixo = nome completo

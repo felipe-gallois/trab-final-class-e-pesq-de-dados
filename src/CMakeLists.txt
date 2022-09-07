@@ -17,3 +17,19 @@ target_include_directories(
   leitor-csv
   PUBLIC "${PROJECT_SOURCE_DIR}/inc"
 )
+
+add_executable(
+  trab
+  programa.cc
+)
+
+target_link_libraries(
+  trab
+  banco-de-nomes
+  leitor-csv
+)
+
+target_include_directories(
+  trab
+  PUBLIC "${PROJECT_SOURCE_DIR}/inc"
+)

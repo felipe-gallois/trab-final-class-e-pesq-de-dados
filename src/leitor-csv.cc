@@ -14,6 +14,10 @@ LeitorCSV::LeitorCSV(const char* nome_do_arquivo) {
 
 void LeitorCSV::LeLinha() {
   std::getline(entrada, linha);
+  if (linha.empty()) {
+    fim_do_arquivo = true;
+    return;
+  }
   colunas.clear();
   SeparaColunas(linha, colunas);
   fim_do_arquivo = entrada.eof();
