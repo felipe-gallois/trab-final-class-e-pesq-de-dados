@@ -9,6 +9,8 @@
 #include <cctype>
 #include <iomanip>
 
+static const int kMaxImpressoes = 10;
+
 /* Configurações do Banco de Dados */
 struct BancoDeDados {
   BancoDeJogadores<20000> jogadores;
@@ -86,6 +88,9 @@ void ExecutaComandoPlayer(std::vector<std::string>& argumentos,
                           BancoDeDados& banco_de_dados) {
   std::vector<Id> id_jogadores =
       banco_de_dados.nomes.PesquisaPrefixo(argumentos[1]);
+  if (id_jogadores.size() > kMaxImpressoes)  // Máximo de jogadores
+    id_jogadores.erase(id_jogadores.begin() + kMaxImpressoes,
+                       id_jogadores.end());
   InfoJogador info;
   for (auto& id : id_jogadores) {
     info = banco_de_dados.jogadores.PesquisaJogador(id);
