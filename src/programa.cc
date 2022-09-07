@@ -1,6 +1,7 @@
 #include "banco-de-jogadores.h"
 #include "banco-de-nomes.h"
 #include "leitor-csv.h"
+#include "banco-de-avaliacoes.h"
 
 #include <iostream>
 #include <string>
@@ -8,6 +9,7 @@
 #include <list>
 #include <cctype>
 #include <iomanip>
+#include <cstdlib>
 
 static const int kMaxImpressoes = 10;
 
@@ -15,11 +17,18 @@ static const int kMaxImpressoes = 10;
 struct BancoDeDados {
   BancoDeJogadores<20000> jogadores;
   BancoDeNomes nomes;
+  BancoDeAvaliacoes<20000> avaliacoes;
 };
 
 std::string GeraCaminhoJogadores(char*& diretorio) {
   std::string caminho(diretorio);
   caminho += ".\\players.csv";
+  return caminho;
+}
+
+std::string GeraCaminhoAvaliacoes(char*& diretorio) {
+  std::string caminho(diretorio);
+  caminho += ".\\rating.csv";
   return caminho;
 }
 
@@ -50,7 +59,7 @@ void SeparaArgumentos(char* comando_char,
   }
 }
 
-void CarregaInformacoes(char*& diretorio_fonte, BancoDeDados& banco_de_dados) {
+void CarregaJogadores(char*& diretorio_fonte, BancoDeDados& banco_de_dados) {
   LeitorCSV leitor_jogadores(GeraCaminhoJogadores(diretorio_fonte).c_str());
 
   /* Linha: [sofifa_id], [name], [player_positions] */
@@ -67,6 +76,29 @@ void CarregaInformacoes(char*& diretorio_fonte, BancoDeDados& banco_de_dados) {
       c = tolower(c);
     banco_de_dados.nomes.InsereNome(nome, std::stoi(id));
   }
+}
+
+void CarregaAvaliacoes(char*& diretorio_fonte, BancoDeDados& banco_de_dados) {
+  LeitorCSV leitor_avaliacoes(GeraCaminhoAvaliacoes(diretorio_fonte).c_str());
+
+  /* Linha: [user_id], [sofifa_id], [rating] */
+  std::string id_usuario;
+  std::string id_jogador;
+  std::string avaliacao;
+  while (!leitor_avaliacoes.FimDoArquivo()) {
+    leitor_avaliacoes.LeLinha();
+    leitor_avaliacoes.Copia(0, id_usuario);
+    leitor_avaliacoes.Copia(1, id_jogador);
+    leitor_avaliacoes.Copia(2, avaliacao);
+    banco_de_dados.avaliacoes.InsereAvaliacao(std::stoi(id_usuario),
+                                              std::stoi(id_jogador),
+                                              std::stof(avaliacao));
+  }
+}
+
+void CarregaInformacoes(char*& diretorio_fonte, BancoDeDados& banco_de_dados) {
+  CarregaJogadores(diretorio_fonte, banco_de_dados);
+  CarregaAvaliacoes(diretorio_fonte, banco_de_dados);
 }
 
 void ImprimeJogador(InfoJogador& info) {
@@ -98,12 +130,31 @@ void ExecutaComandoPlayer(std::vector<std::string>& argumentos,
   }
 }
 
+void ExecutaComandoUser(std::vector<std::string>& argumentos,
+                          BancoDeDados& banco_de_dados) {
+  InfoUsuario usuario =
+      banco_de_dados.avaliacoes.PesquisaUsuario(std::stoi(argumentos[1]));
+  auto iterador = usuario.avaliacoes.rbegin();
+  InfoJogador jogador;
+  for (int contador = 0; contador < 20; contador++) {
+    if (iterador != usuario.avaliacoes.rend()) {
+      jogador = banco_de_dados.jogadores.PesquisaJogador(iterador->id_jogador);
+      ImprimeJogador(jogador);
+      iterador++;
+    } else {
+      return;
+    }
+  }
+}
+
 bool ExecutaComando(std::vector<std::string>& argumentos,
                     BancoDeDados& banco_de_dados) {
   if (argumentos[0] == "q") {
     return true;
   } else if (argumentos[0] == "player") {
     ExecutaComandoPlayer(argumentos, banco_de_dados);
+  } else if (argumentos[0] == "user") {
+    ExecutaComandoUser(argumentos, banco_de_dados);
   } else {
     std::cout << "Comando nao reconhecido. Por favor, tente novamente."
               << std::endl;
@@ -137,5 +188,5 @@ int main(int argc, char* argv[]) {
     }
   }
 
-  return 0;
+  _Exit(EXIT_SUCCESS);
 }
