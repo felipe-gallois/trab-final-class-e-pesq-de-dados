@@ -13,6 +13,7 @@ typedef float Avaliacao;
 struct InfoAvaliacao {
   Id id_jogador;
   Avaliacao nota;
+  bool operator<(const InfoAvaliacao&) const;
 };
 
 struct InfoUsuario {
@@ -58,8 +59,10 @@ InfoUsuario BancoDeAvaliacoes<tamanho>
     ::PesquisaUsuario(IdUsuario id_usuario) {
   std::list<InfoUsuario>& lista_usuarios = tabela[CalculaHash(id_usuario)];
   for (auto& i : lista_usuarios) {
-    if (i.id_usuario == id_usuario)
+    if (i.id_usuario == id_usuario) {
+      i.avaliacoes.sort();
       return i;
+    }
   }
   return {0, {}};
 }
@@ -67,6 +70,10 @@ InfoUsuario BancoDeAvaliacoes<tamanho>
 template <int tamanho>
 int BancoDeAvaliacoes<tamanho>::CalculaHash(IdUsuario id_usuario) {
   return id_usuario % tamanho; 
+}
+
+bool InfoAvaliacao::operator<(const InfoAvaliacao& operando) const {
+  return (nota < operando.nota);
 }
 
 #endif
