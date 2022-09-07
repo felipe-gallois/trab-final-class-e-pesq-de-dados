@@ -9,7 +9,7 @@
 typedef int Id;
 typedef std::string Nome;
 typedef std::string Posicao;
-typedef int PontuacaoAcumulada;
+typedef float PontuacaoAcumulada;
 typedef int NumeroAvaliacoes;
 
 struct InfoJogador {
