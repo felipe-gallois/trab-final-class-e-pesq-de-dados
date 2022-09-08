@@ -1,16 +1,12 @@
 #ifndef BANCO_DE_JOGADORES_H
 #define BANCO_DE_JOGADORES_H
 
+#include "typedefs.h"
+
 #include <string>
 #include <list>
 #include <array>
 #include <stdexcept>
-
-typedef int Id;
-typedef std::string Nome;
-typedef std::string Posicao;
-typedef float PontuacaoAcumulada;
-typedef int NumeroAvaliacoes;
 
 struct InfoJogador {
   Id id;
@@ -26,6 +22,7 @@ class BancoDeJogadores {
     explicit BancoDeJogadores();
     void InsereJogador(Id id, Nome nome, std::list<Posicao> posicoes);
     InfoJogador PesquisaJogador(Id id);
+    void AdicionaAvaliacao(Id id, Avaliacao avaliacao);
   private:
     std::array<std::list<InfoJogador>, tamanho> tabela;
     int CalculaHash(Id id);
@@ -41,7 +38,7 @@ BancoDeJogadores<tamanho>::BancoDeJogadores() {
 
 template <int tamanho>
 void BancoDeJogadores<tamanho>::InsereJogador(Id id, Nome nome, std::list<Posicao> posicoes) {
-  tabela[CalculaHash(id)].push_back({id, nome, posicoes, 5, 1});  // TODO
+  tabela[CalculaHash(id)].push_back({id, nome, posicoes, 0, 0});  // TODO
 }
 
 template <int tamanho>
@@ -51,6 +48,18 @@ InfoJogador BancoDeJogadores<tamanho>::PesquisaJogador(Id id) {
     if (i.id == id) return i;
   }
   return {0, "", {}, 0, 0};
+}
+
+template <int tamanho>
+void BancoDeJogadores<tamanho>::AdicionaAvaliacao(Id id, Avaliacao avaliacao) {
+  std::list<InfoJogador>& lista_jogadores = tabela[CalculaHash(id)];
+  for (auto& i : lista_jogadores) {
+    if (i.id == id) {
+      i.pont_acumulada += avaliacao;
+      i.num_avaliacoes++;
+      return;
+    }
+  }
 }
 
 template <int tamanho>

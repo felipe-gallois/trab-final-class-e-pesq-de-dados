@@ -18,6 +18,11 @@ int main() {
   banco.InsereJogador(22, "Nome 3", {"MLE"});
   banco.InsereJogador(34, "Nome 4", {"MLG", "MLD", "PT"});
 
+  banco.AdicionaAvaliacao(10, 3);
+  banco.AdicionaAvaliacao(11, 2.5);
+  banco.AdicionaAvaliacao(11, 4);
+  banco.AdicionaAvaliacao(22, 5);
+
   InfoJogador info;
   try {
     info = banco.PesquisaJogador(10);

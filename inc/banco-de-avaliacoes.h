@@ -2,13 +2,11 @@
 #define BANCO_DE_AVALIACOES_H_
 
 #include "banco-de-jogadores.h"
+#include "typedefs.h"
 
 #include <list>
 #include <array>
 #include <stdexcept>
-
-typedef int IdUsuario;
-typedef float Avaliacao;
 
 struct InfoAvaliacao {
   Id id_jogador;
