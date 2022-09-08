@@ -14,6 +14,9 @@
 static const int kMaxImpressoesPlayer = 10;
 static const int kMaxImpressoesUser = 20;
 
+static const char kArquivoJogadores[] = ".\\players.csv";
+static const char kArquivoAvaliacoes[] = ".\\rating.csv";
+
 /* Configurações do Banco de Dados */
 struct BancoDeDados {
   BancoDeJogadores<20000> jogadores;
@@ -23,13 +26,13 @@ struct BancoDeDados {
 
 std::string GeraCaminhoJogadores(char*& diretorio) {
   std::string caminho(diretorio);
-  caminho += ".\\players.csv";
+  caminho += kArquivoJogadores;
   return caminho;
 }
 
 std::string GeraCaminhoAvaliacoes(char*& diretorio) {
   std::string caminho(diretorio);
-  caminho += ".\\rating.csv";
+  caminho += kArquivoAvaliacoes;
   return caminho;
 }
 
@@ -94,6 +97,8 @@ void CarregaAvaliacoes(char*& diretorio_fonte, BancoDeDados& banco_de_dados) {
     banco_de_dados.avaliacoes.InsereAvaliacao(std::stoi(id_usuario),
                                               std::stoi(id_jogador),
                                               std::stof(avaliacao));
+    banco_de_dados.jogadores.AdicionaAvaliacao(std::stoi(id_jogador),
+                                               std::stof(avaliacao));
   }
 }
 
@@ -102,23 +107,55 @@ void CarregaInformacoes(char*& diretorio_fonte, BancoDeDados& banco_de_dados) {
   CarregaAvaliacoes(diretorio_fonte, banco_de_dados);
 }
 
+void ImprimeCabecalhoJogador() {
+  std::cout << std::setw(8) << std::left << "Id"
+            << std::setw(46) << std::left << "Nome"
+            << std::setw(13) << std::left << "Posicoes"
+            << std::setw(8) << std::left << "Rating"
+            << std::setw(10) << std::left << "Num. Aval."
+            << std::endl;
+}
+
 void ImprimeJogador(InfoJogador& info) {
   std::cout << std::setw(8) << std::left << info.id
-            << std::setw(50) << std::left << info.nome;
+            << std::setw(46) << std::left << info.nome;
   std::string posicoes;
   for (auto& posicao : info.posicoes) {
     posicoes.append(posicao);
     posicoes.append(" ");
   }
-  std::cout << std::setw(16) << std::left << posicoes
-            << std::setw(8) << std::left
-            << (float) info.pont_acumulada / (float) info.num_avaliacoes
-            << std::setw(8) << std::left << info.num_avaliacoes
+  std::cout << std::setw(13) << std::left << posicoes
+            << std::setw(8) << std::left << std::setprecision(2) << std::fixed
+            << info.pont_acumulada / (float) info.num_avaliacoes
+            << std::setw(10) << std::left << info.num_avaliacoes
+            << std::endl;
+}
+
+void ImprimeCabecalhoAvaliacao() {
+  std::cout << std::setw(8) << std::left << "Id"
+            << std::setw(46) << std::left << "Nome"
+            << std::setw(8) << std::left << "Rating"
+            << std::setw(12) << std::left << "Num. Aval."
+            << std::setw(9) << std::left << "Avaliacao"
+            << std::endl;
+}
+
+void ImprimeAvaliacao(InfoJogador& info_jogador,
+                      InfoAvaliacao& info_avaliacao) {
+  std::cout << std::setw(8) << std::left << info_jogador.id
+            << std::setw(46) << std::left << info_jogador.nome
+            << std::setw(8) << std::left << std::setprecision(2) << std::fixed
+            << info_jogador.pont_acumulada /
+               (float) info_jogador.num_avaliacoes
+            << std::setw(12) << std::left << info_jogador.num_avaliacoes
+            << std::setw(9) << std::left << std::setprecision(2) << std::fixed
+            << info_avaliacao.nota
             << std::endl;
 }
 
 void ExecutaComandoPlayer(std::vector<std::string>& argumentos,
                           BancoDeDados& banco_de_dados) {
+  ImprimeCabecalhoJogador();
   std::vector<Id> id_jogadores =
       banco_de_dados.nomes.PesquisaPrefixo(argumentos[1]);
   if (id_jogadores.size() > kMaxImpressoesPlayer)  // Máximo de jogadores
@@ -133,14 +170,17 @@ void ExecutaComandoPlayer(std::vector<std::string>& argumentos,
 
 void ExecutaComandoUser(std::vector<std::string>& argumentos,
                           BancoDeDados& banco_de_dados) {
+  ImprimeCabecalhoAvaliacao();
   InfoUsuario usuario =
       banco_de_dados.avaliacoes.PesquisaUsuario(std::stoi(argumentos[1]));
   auto iterador = usuario.avaliacoes.rbegin();
   InfoJogador jogador;
+  InfoAvaliacao avaliacao;
   for (int contador = 0; contador < kMaxImpressoesUser; contador++) {
     if (iterador != usuario.avaliacoes.rend()) {
       jogador = banco_de_dados.jogadores.PesquisaJogador(iterador->id_jogador);
-      ImprimeJogador(jogador);
+      avaliacao = *iterador;
+      ImprimeAvaliacao(jogador, avaliacao);
       iterador++;
     } else {
       return;
@@ -170,6 +210,8 @@ int main(int argc, char* argv[]) {
   }
 
   BancoDeDados banco_de_dados;
+
+  std::cout << "Carregando..." << std::endl;
 
   CarregaInformacoes(argv[1], banco_de_dados);
 
