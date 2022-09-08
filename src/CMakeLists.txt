@@ -18,6 +18,16 @@ target_include_directories(
   PUBLIC "${PROJECT_SOURCE_DIR}/inc"
 )
 
+add_library(
+  banco-de-posicoes
+  banco-de-posicoes.cc
+)
+
+target_include_directories(
+  banco-de-posicoes
+  PUBLIC "${PROJECT_SOURCE_DIR}/inc"
+)
+
 add_executable(
   trab
   programa.cc
