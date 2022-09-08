@@ -11,7 +11,8 @@
 #include <iomanip>
 #include <cstdlib>
 
-static const int kMaxImpressoes = 10;
+static const int kMaxImpressoesPlayer = 10;
+static const int kMaxImpressoesUser = 20;
 
 /* Configurações do Banco de Dados */
 struct BancoDeDados {
@@ -120,8 +121,8 @@ void ExecutaComandoPlayer(std::vector<std::string>& argumentos,
                           BancoDeDados& banco_de_dados) {
   std::vector<Id> id_jogadores =
       banco_de_dados.nomes.PesquisaPrefixo(argumentos[1]);
-  if (id_jogadores.size() > kMaxImpressoes)  // Máximo de jogadores
-    id_jogadores.erase(id_jogadores.begin() + kMaxImpressoes,
+  if (id_jogadores.size() > kMaxImpressoesPlayer)  // Máximo de jogadores
+    id_jogadores.erase(id_jogadores.begin() + kMaxImpressoesPlayer,
                        id_jogadores.end());
   InfoJogador info;
   for (auto& id : id_jogadores) {
@@ -136,7 +137,7 @@ void ExecutaComandoUser(std::vector<std::string>& argumentos,
       banco_de_dados.avaliacoes.PesquisaUsuario(std::stoi(argumentos[1]));
   auto iterador = usuario.avaliacoes.rbegin();
   InfoJogador jogador;
-  for (int contador = 0; contador < 20; contador++) {
+  for (int contador = 0; contador < kMaxImpressoesUser; contador++) {
     if (iterador != usuario.avaliacoes.rend()) {
       jogador = banco_de_dados.jogadores.PesquisaJogador(iterador->id_jogador);
       ImprimeJogador(jogador);
