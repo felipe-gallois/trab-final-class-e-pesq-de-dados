@@ -1,7 +1,7 @@
 #ifndef BANCO_DE_POSICOES_H_
 #define BANCO_DE_POSICOES_H_
 
-#include "typedefs.h"
+#include "tipos.h"
 
 #include <list>
 

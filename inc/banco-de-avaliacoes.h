@@ -1,8 +1,7 @@
 #ifndef BANCO_DE_AVALIACOES_H_
 #define BANCO_DE_AVALIACOES_H_
 
-#include "banco-de-jogadores.h"
-#include "typedefs.h"
+#include "tipos.h"
 
 #include <list>
 #include <array>
@@ -68,10 +67,6 @@ InfoUsuario BancoDeAvaliacoes<tamanho>
 template <int tamanho>
 int BancoDeAvaliacoes<tamanho>::CalculaHash(IdUsuario id_usuario) {
   return id_usuario % tamanho; 
-}
-
-bool InfoAvaliacao::operator<(const InfoAvaliacao& operando) const {
-  return (nota < operando.nota);
 }
 
 #endif

@@ -2,6 +2,7 @@
 #include "banco-de-nomes.h"
 #include "leitor-csv.h"
 #include "banco-de-avaliacoes.h"
+#include "banco-de-posicoes.h"
 
 #include <iostream>
 #include <string>
@@ -22,6 +23,7 @@ struct BancoDeDados {
   BancoDeJogadores<20000> jogadores;
   BancoDeNomes nomes;
   BancoDeAvaliacoes<20000> avaliacoes;
+  BancoDePosicoes posicoes;
 };
 
 std::string GeraCaminhoJogadores(char*& diretorio) {
@@ -79,6 +81,7 @@ void CarregaJogadores(char*& diretorio_fonte, BancoDeDados& banco_de_dados) {
     for (auto& c : nome)
       c = tolower(c);
     banco_de_dados.nomes.InsereNome(nome, std::stoi(id));
+    banco_de_dados.posicoes.AdicionaJogador(std::stoi(id), posicoes);
   }
 }
 
@@ -188,6 +191,34 @@ void ExecutaComandoUser(std::vector<std::string>& argumentos,
   }
 }
 
+void ExecutaComandoTopN(std::vector<std::string>& argumentos,
+                          BancoDeDados& banco_de_dados) {
+  int numero_jogadores = std::stoi(argumentos[0].substr(3));
+  if (numero_jogadores < 1)
+    throw std::invalid_argument("O comando topn recebeu numero invalido de \
+                                jogadores");
+  JogadoresDaPosicao id_jogadores =
+      banco_de_dados.posicoes.PesquisaPosicao(argumentos[1]);
+  InfoJogador jogador;
+  std::list<InfoJogador> lista_jogadores;
+  for (auto& i : id_jogadores.lista_de_jogadores) {
+    jogador = banco_de_dados.jogadores.PesquisaJogador(i);
+    if (jogador.num_avaliacoes >= 1000)
+      lista_jogadores.push_back(jogador);
+  }
+  lista_jogadores.sort();
+  ImprimeCabecalhoJogador();
+  auto iterador = lista_jogadores.rbegin();
+  for (int i = 0; i < numero_jogadores; i++) {
+    if (iterador != lista_jogadores.rend()) {
+      ImprimeJogador(*iterador);
+      iterador++;
+    } else {
+      return;
+    }
+  }
+}
+
 bool ExecutaComando(std::vector<std::string>& argumentos,
                     BancoDeDados& banco_de_dados) {
   if (argumentos[0] == "q") {
@@ -196,6 +227,8 @@ bool ExecutaComando(std::vector<std::string>& argumentos,
     ExecutaComandoPlayer(argumentos, banco_de_dados);
   } else if (argumentos[0] == "user") {
     ExecutaComandoUser(argumentos, banco_de_dados);
+  } else if (argumentos[0].compare(0, 3, "top") == 0) {
+    ExecutaComandoTopN(argumentos, banco_de_dados);
   } else {
     std::cout << "Comando nao reconhecido. Por favor, tente novamente."
               << std::endl;

@@ -1,7 +1,7 @@
 #ifndef BANCO_DE_JOGADORES_H
 #define BANCO_DE_JOGADORES_H
 
-#include "typedefs.h"
+#include "tipos.h"
 
 #include <string>
 #include <list>
@@ -14,6 +14,7 @@ struct InfoJogador {
   std::list<Posicao> posicoes;
   PontuacaoAcumulada pont_acumulada;
   NumeroAvaliacoes num_avaliacoes;
+  bool operator<(const InfoJogador&) const;
 };
 
 template <int tamanho>
