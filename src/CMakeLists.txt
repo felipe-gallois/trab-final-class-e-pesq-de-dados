@@ -48,6 +48,16 @@ target_include_directories(
   PUBLIC "${PROJECT_SOURCE_DIR}/inc"
 )
 
+add_library(
+  banco-de-tags
+  banco-de-tags.cc
+)
+
+target_include_directories(
+  banco-de-tags
+  PUBLIC "${PROJECT_SOURCE_DIR}/inc"
+)
+
 add_executable(
   trab
   programa.cc
@@ -59,6 +69,7 @@ target_link_libraries(
   banco-de-posicoes
   banco-de-avaliacoes
   banco-de-jogadores
+  banco-de-tags
   leitor-csv
 )
 

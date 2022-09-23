@@ -10,5 +10,6 @@ typedef std::string Nome;
 typedef std::string Posicao;
 typedef float PontuacaoAcumulada;
 typedef int NumeroAvaliacoes;
+typedef std::string Tag;
 
 #endif
