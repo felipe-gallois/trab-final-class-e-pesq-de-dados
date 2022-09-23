@@ -3,6 +3,7 @@
 #include "leitor-csv.h"
 #include "banco-de-avaliacoes.h"
 #include "banco-de-posicoes.h"
+#include "banco-de-tags.h"
 
 #include <iostream>
 #include <string>
@@ -17,6 +18,7 @@ static const int kMaxImpressoesUser = 20;
 
 static const char kArquivoJogadores[] = ".\\players.csv";
 static const char kArquivoAvaliacoes[] = ".\\rating.csv";
+static const char kArquivoTags[] = ".\\tags.csv";
 
 /* Configurações do Banco de Dados */
 struct BancoDeDados {
@@ -24,6 +26,7 @@ struct BancoDeDados {
   BancoDeNomes nomes;
   BancoDeAvaliacoes<20000> avaliacoes;
   BancoDePosicoes posicoes;
+  BancoDeTags tags;
 };
 
 std::string GeraCaminhoJogadores(char*& diretorio) {
@@ -35,6 +38,12 @@ std::string GeraCaminhoJogadores(char*& diretorio) {
 std::string GeraCaminhoAvaliacoes(char*& diretorio) {
   std::string caminho(diretorio);
   caminho += kArquivoAvaliacoes;
+  return caminho;
+}
+
+std::string GeraCaminhoTags(char*& diretorio) {
+  std::string caminho(diretorio);
+  caminho += kArquivoTags;
   return caminho;
 }
 
@@ -105,9 +114,28 @@ void CarregaAvaliacoes(char*& diretorio_fonte, BancoDeDados& banco_de_dados) {
   }
 }
 
+void CarregaTags(char*& diretorio_fonte, BancoDeDados& banco_de_dados) {
+  LeitorCSV leitor_tags(GeraCaminhoTags(diretorio_fonte).c_str());
+
+  /* Linha: [user_id], [sofifa_id], [tag] */
+  std::string id_jogador;
+  std::string tag;
+  while (!leitor_tags.FimDoArquivo()) {
+    leitor_tags.LeLinha();
+    leitor_tags.Copia(1, id_jogador);
+    leitor_tags.Copia(2, tag);
+
+    if (!tag.empty()) {
+      banco_de_dados.tags.InsereTag(tag, std::stoi(id_jogador));
+      banco_de_dados.jogadores.AdicionaTag(std::stoi(id_jogador), tag);
+    }
+  }
+}
+
 void CarregaInformacoes(char*& diretorio_fonte, BancoDeDados& banco_de_dados) {
   CarregaJogadores(diretorio_fonte, banco_de_dados);
   CarregaAvaliacoes(diretorio_fonte, banco_de_dados);
+  CarregaTags(diretorio_fonte, banco_de_dados);
 }
 
 void ImprimeCabecalhoJogador() {
@@ -156,6 +184,14 @@ void ImprimeAvaliacao(InfoJogador& info_jogador,
             << std::endl;
 }
 
+bool EncontrouTag(Tag& tag, std::list<Tag>& lista_tags) {
+  for (auto& t : lista_tags) {
+    if (t == tag)
+      return true;
+  }
+  return false;
+}
+
 void ExecutaComandoPlayer(std::vector<std::string>& argumentos,
                           BancoDeDados& banco_de_dados) {
   ImprimeCabecalhoJogador();
@@ -188,6 +224,31 @@ void ExecutaComandoUser(std::vector<std::string>& argumentos,
     } else {
       return;
     }
+  }
+}
+
+void ExecutaComandoTags(std::vector<std::string>& argumentos,
+                          BancoDeDados& banco_de_dados) {
+  if (argumentos.size() < 2)
+    throw std::invalid_argument("Argumentos insuficientes");
+  std::list<Id> lista_jogadores =
+      banco_de_dados.tags.PesquisaTag(argumentos[1]);
+  lista_jogadores.sort();
+  lista_jogadores.unique();
+  std::list<Id> lista_auxiliar = lista_jogadores;
+  for (auto& jogador : lista_jogadores) {
+    for (int i = 2; i < argumentos.size(); i++) {
+      if (!banco_de_dados.jogadores.EncontrouTag(jogador, argumentos[i])) {
+        lista_auxiliar.remove(jogador);
+        break;
+      }
+    }
+  }
+  ImprimeCabecalhoJogador();
+  InfoJogador info_jogador;
+  for (auto& jogador : lista_auxiliar) {
+    info_jogador = banco_de_dados.jogadores.PesquisaJogador(jogador);
+    ImprimeJogador(info_jogador);
   }
 }
 
@@ -227,6 +288,8 @@ bool ExecutaComando(std::vector<std::string>& argumentos,
     ExecutaComandoPlayer(argumentos, banco_de_dados);
   } else if (argumentos[0] == "user") {
     ExecutaComandoUser(argumentos, banco_de_dados);
+  } else if (argumentos[0] == "tags") {
+    ExecutaComandoTags(argumentos, banco_de_dados);  
   } else if (argumentos[0].compare(0, 3, "top") == 0) {
     ExecutaComandoTopN(argumentos, banco_de_dados);
   } else {

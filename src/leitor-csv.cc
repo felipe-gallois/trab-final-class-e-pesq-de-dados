@@ -28,9 +28,8 @@ void LeitorCSV::Copia(int coluna, std::string& destino) {
     auto iterador = colunas.begin();
     std::advance(iterador, coluna);
     destino = *iterador;
-    return;
   } else {
-    throw std::out_of_range("Tentou acessar posicao fora dos limites");
+    destino.clear();
   }
 }
 

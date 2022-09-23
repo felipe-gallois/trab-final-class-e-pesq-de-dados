@@ -14,6 +14,7 @@ struct InfoJogador {
   std::list<Posicao> posicoes;
   PontuacaoAcumulada pont_acumulada;
   NumeroAvaliacoes num_avaliacoes;
+  std::list<Tag> tags;
   bool operator<(const InfoJogador&) const;
 };
 
@@ -24,6 +25,8 @@ class BancoDeJogadores {
     void InsereJogador(Id id, Nome nome, std::list<Posicao> posicoes);
     InfoJogador PesquisaJogador(Id id);
     void AdicionaAvaliacao(Id id, Avaliacao avaliacao);
+    void AdicionaTag(Id id, Tag tag);
+    bool EncontrouTag(Id id, Tag& tag);
   private:
     std::array<std::list<InfoJogador>, tamanho> tabela;
     int CalculaHash(Id id);
@@ -64,8 +67,31 @@ void BancoDeJogadores<tamanho>::AdicionaAvaliacao(Id id, Avaliacao avaliacao) {
 }
 
 template <int tamanho>
+void BancoDeJogadores<tamanho>::AdicionaTag(Id id, Tag tag) {
+  std::list<InfoJogador>& lista_jogadores = tabela[CalculaHash(id)];
+  for (auto& i : lista_jogadores) {
+    if (i.id == id) {
+      i.tags.push_back(tag);
+      return;
+    }
+  }
+}
+
+template <int tamanho>
 int BancoDeJogadores<tamanho>::CalculaHash(Id id) {
   return id % tamanho; 
+}
+
+template <int tamanho>
+bool BancoDeJogadores<tamanho>::EncontrouTag(Id id, Tag& tag) {
+  InfoJogador jogador = PesquisaJogador(id);
+  if (jogador.id == 0)
+    return false;
+  for (auto& t : jogador.tags) {
+    if (t == tag)
+      return true;
+  }
+  return false;
 }
 
 #endif
