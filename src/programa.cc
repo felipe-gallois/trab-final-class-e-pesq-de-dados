@@ -4,6 +4,7 @@
 #include "banco-de-avaliacoes.h"
 #include "banco-de-posicoes.h"
 #include "banco-de-tags.h"
+#include "ordena.h"
 
 #include <iostream>
 #include <string>
@@ -233,7 +234,7 @@ void ExecutaComandoTags(std::vector<std::string>& argumentos,
     throw std::invalid_argument("Argumentos insuficientes");
   std::list<Id> lista_jogadores =
       banco_de_dados.tags.PesquisaTag(argumentos[1]);
-  lista_jogadores.sort();
+  OrdenaLista(lista_jogadores);
   lista_jogadores.unique();
   std::list<Id> lista_auxiliar = lista_jogadores;
   for (auto& jogador : lista_jogadores) {
@@ -267,7 +268,7 @@ void ExecutaComandoTopN(std::vector<std::string>& argumentos,
     if (jogador.num_avaliacoes >= 1000)
       lista_jogadores.push_back(jogador);
   }
-  lista_jogadores.sort();
+  OrdenaLista(lista_jogadores);
   ImprimeCabecalhoJogador();
   auto iterador = lista_jogadores.rbegin();
   for (int i = 0; i < numero_jogadores; i++) {
