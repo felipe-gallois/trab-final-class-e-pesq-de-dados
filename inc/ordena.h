@@ -3,7 +3,6 @@
 
 #include <list>
 #include <vector>
-#include <limits>
 
 template <typename Tipo>
 inline void TrocaElementos(Tipo& primeiro, Tipo& segundo) {
@@ -14,9 +13,8 @@ inline void TrocaElementos(Tipo& primeiro, Tipo& segundo) {
 }
 
 template <typename Tipo>
-void ParticionaSubvetor(std::vector<Tipo>& vetor, std::size_t inicio,
-                        std::size_t fim) {
-  std::size_t media = (inicio + fim) / 2;
+void ParticionaSubvetor(std::vector<Tipo>& vetor, int inicio, int fim) {
+  int media = (inicio + fim) / 2;
   if (vetor[media] < vetor[inicio])
     TrocaElementos(vetor[media], vetor[inicio]);
   if (vetor[fim] < vetor[media]) {
@@ -28,10 +26,9 @@ void ParticionaSubvetor(std::vector<Tipo>& vetor, std::size_t inicio,
 }
 
 template <typename Tipo>
-std::size_t OrdenaSubvetor(std::vector<Tipo>& vetor, std::size_t inicio,
-                           std::size_t fim) {
-  std::size_t marcador = inicio;
-  for (std::size_t pos = inicio + 1; pos <= fim; ++pos) {
+int OrdenaSubvetor(std::vector<Tipo>& vetor, int inicio, int fim) {
+  int marcador = inicio;
+  for (int pos = inicio + 1; pos <= fim; ++pos) {
     if (vetor[pos] < vetor[inicio]) {
       if (pos != marcador + 1)
         TrocaElementos(vetor[marcador + 1], vetor[pos]);
@@ -43,10 +40,9 @@ std::size_t OrdenaSubvetor(std::vector<Tipo>& vetor, std::size_t inicio,
 }
 
 template <typename Tipo>
-void OrdenaParcial(std::vector<Tipo>& vetor, std::size_t inicio,
-                   std::size_t fim) {
-  std::size_t posicao_particionador;
-  if (fim - inicio < 1 || fim == std::numeric_limits<std::size_t>::max()) {
+void OrdenaParcial(std::vector<Tipo>& vetor, int inicio, int fim) {
+  int posicao_particionador;
+  if (fim - inicio < 1 || fim > vetor.size() - 1) {
     return;
   } else if (fim - inicio == 1) {
     if (vetor[fim] < vetor[inicio]) {
